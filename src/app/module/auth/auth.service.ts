@@ -233,14 +233,46 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 
   let user = ifPatientExistWithGoogleAuth;
 
-  if (!user) {
-    user = await prisma.user.create({
+  if (!ifPatientExistWithGoogleAuth) {
+
+	const ifPatientExistsWithCredentials = await prisma.user.findUnique({
+		where : {
+			email: googleIdTokenPayload.email,
+			role: Role.PATIENT,
+			authProvider: AuthProvider.CREDENTIAL
+		}
+	});
+
+	if(ifPatientExistsWithCredentials){
+
+		if(!ifPatientExistsWithCredentials.emailVerified){
+			throw new Error("Email not verified")
+		}
+
+		if(ifPatientExistsWithCredentials.status === UserStatus.BLOCKED){
+			throw new Error("User is blocked")
+		}
+		if(ifPatientExistsWithCredentials.isDeleted || ifPatientExistsWithCredentials.status === UserStatus.DELETED){
+			throw new Error ("User is Deleted")
+		}
+
+		user = await prisma.user.update({
+			where : {
+				id: ifPatientExistsWithCredentials.id
+			},
+			data : {
+				googleId : googleIdTokenPayload.sub,
+			}
+		});
+	} else {
+		user = await prisma.user.create({
       data: {
         name: googleIdTokenPayload?.name,
         email: googleIdTokenPayload?.email,
         role: Role.PATIENT,
         googleId: googleIdTokenPayload?.sub,
         authProvider: AuthProvider.GOOGLE,
+		emailVerified: true,
         patient: {
           create: {
             name: googleIdTokenPayload?.name,
@@ -249,13 +281,85 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
         },
       },
     });
+	}
+
+
+    
   }
 
+
+
+
+
+
+
+  if (!ifPatientExistWithGoogleAuth) {
+
+	const ifPatientExistsWithCredentials = await prisma.user.findUnique({
+		where : {
+			email: googleIdTokenPayload.email,
+			role: Role.PATIENT,
+			authProvider: AuthProvider.CREDENTIAL
+		}
+	});
+
+	if(!user){
+		throw new Error("User not found")
+	}
+
+	if(ifPatientExistsWithCredentials){
+		if(user.status === UserStatus.BLOCKED){
+			throw new Error("User is blocked")
+		}
+		if(user.isDeleted || user.status === UserStatus.DELETED){
+			throw new Error ("User is Deleted")
+		}
+
+		user = await prisma.user.update({
+			where : {
+				id: ifPatientExistsWithCredentials.id
+			},
+			data : {
+				googleId : googleIdTokenPayload.sub,
+			}
+		});
+	} else {
+		user = await prisma.user.create({
+      data: {
+        name: googleIdTokenPayload?.name,
+        email: googleIdTokenPayload?.email,
+        role: Role.PATIENT,
+        googleId: googleIdTokenPayload?.sub,
+        authProvider: AuthProvider.GOOGLE,
+		emailVerified: true,
+        patient: {
+          create: {
+            name: googleIdTokenPayload?.name,
+            email: googleIdTokenPayload?.email,
+          },
+        },
+      },
+    });
+	}
+
+
+    
+  }
+
+
+
+
+
+
+
+
+
+
   const jwtPayload = {
-    userId: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
+    userId: user?.id,
+    name: user?.name,
+    email: user?.email,
+    role: user?.role,
   };
 
   const accessToken = jwtUtils.createToken(
