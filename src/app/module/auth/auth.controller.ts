@@ -114,7 +114,6 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
 });
 
 const googleLogin = catchAsync(async (req: Request, res: Response) => {
-
 	const payload = req.body;
 
 	const result = await AuthService.googleLogin(payload);
@@ -133,7 +132,6 @@ const googleLogin = catchAsync(async (req: Request, res: Response) => {
 		sameSite: "none",
 		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
 	});
-	
 
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
@@ -151,5 +149,5 @@ export const AuthController = {
 	loginUser,
 	getMe,
 	refreshToken,
-	googleLogin
+	googleLogin,
 };
