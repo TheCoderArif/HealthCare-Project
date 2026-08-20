@@ -32,7 +32,25 @@ const LoginZodSchema = z.object({
 
 });
 
+const ForgotPasswordZodSchema = z.object({
+    email: z.email(),
+});
+
+const ResetPasswordZodSchema = z.object({
+    email: z.email(),
+    newPassword: z.string("Please enter Password")
+      .min(8, "Password length must be 8")
+      .regex(/[A-Z]/, "Password must contain atleast one upper letter")
+      .regex(/[a-z]/, "Password must contain atleast one lower letter")
+      .regex(/[0-9]/, "Password must contain atleast one number")
+      .regex(/[^A-Za-z0-9]/, "Password must contain atleast 1 special charecter"),
+    otp: z.string().length(6)
+
+});
+
 export const UserValidations = {
   PatientRegistrationZodSchema,
-  LoginZodSchema
+  LoginZodSchema,
+  ForgotPasswordZodSchema,
+  ResetPasswordZodSchema
 };

@@ -41,7 +41,7 @@ app.get("/redis", async (req: Request, res: Response, next: NextFunction) => {
 		await redisClient.set("forgot-password-otp:patient1@gmail.com", "123456",{
 			expiration: {
 				type: "EX",
-				value: 60
+				value: 5*60
 			}
 		});
 
