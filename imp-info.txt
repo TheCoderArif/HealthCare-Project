@@ -1,0 +1,41 @@
+--> ExpressJs 
+    for creating Server
+
+--> Prisma
+    for create and manage Postgrase DataBase
+
+--> Biome
+    for linting and formatting
+
+--> BcryptJS from npm
+    for hashing password
+
+--> JsonWebToken form npm
+    for creating Access and Refresh Token
+
+--> Crypto from node 
+    for creating random numbers like OTP
+
+--> Redis 
+    for otp mananagement
+
+--> NodeMailer
+    for sending mail to clients
+
+--> ejs 
+    for creating interective emails
+
+-->
+
+-->
+
+-->
+
+
+-->
+
+-->
+
+-->
+
+-->
