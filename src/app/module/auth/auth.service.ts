@@ -20,6 +20,7 @@ import type {
 import {  type TokenPayload } from "google-auth-library";
 import { googleClient } from "../../lib/googleAuth";
 import { redisClient } from "../../lib/redis";
+import { transporter } from "../../lib/nodeMailer";
 
 const registerPatient = async (payload: IRegisterPatientPayload) => {
 	const { name, password , patient : patientData} = payload;
@@ -408,6 +409,14 @@ const forgotPassword = async (payload : IForgotPasswordPayload) => {
 		}
 	});
 
+	await transporter.sendMail({
+		from : config.email_sender,
+		to : isUserExist.email,
+		subject : "Forgot Password",
+		// text : `Your OTP is ${otp}`,
+		html : `<h1>Your OTP is : ${otp}</h1>`
+	});
+
 
 
 };
@@ -462,6 +471,14 @@ const resetPassword = async (payload : IResetPasswordPayload) => {
 	});
 
 	await redisClient.del([key]);
+
+	await transporter.sendMail({
+		from : config.email_sender,
+		to : isUserExist.email,
+		subject : "Password Changed",
+		// text : `Your OTP is ${otp}`,
+		html : `<h1>Your Password has changed successfully!</h1>`
+	});
 	
 
 };
