@@ -10,6 +10,7 @@ const router = Router();
 
 
 router.post("/register",validateRequest(UserValidations.PatientRegistrationZodSchema), AuthController.registerPatient);
+router.post("/verify-email",validateRequest(UserValidations.PatientEmailVerifyZodSchema), AuthController.verifyPatientEmail);
 router.post("/login",validateRequest(UserValidations.LoginZodSchema), AuthController.loginUser);
 router.get(
 	"/me",
